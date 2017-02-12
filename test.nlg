@@ -1,0 +1,87 @@
+@import numbers.nlg
+@import locations.nlg
+@import filler.nlg
+
+%entry=
+    ~prefix %sentence ~suffix
+
+%sentence=
+    %command
+    %sequence
+    %if
+
+%command=
+    %getState
+    %setState
+
+%sequence
+    %command and then %command
+
+%if
+    if %condition then %command
+
+%condition
+    %currentWeather is $operator $number 
+
+%currentWeather
+    the temperature in $location 
+
+%getState=
+    %getDeviceState
+    %getWeather
+    %getTime
+
+%getDeviceState
+    get the state of the $device.name
+    what is the the state of the $device.name
+    tell me about the $device.name
+
+%getWeather
+    what is the weather in $location
+    how is it in $location
+    tell me the weather of $location
+
+%getTime
+    what time is it in $location
+    tell me what time it is in $location
+
+%setState=
+    %setDeviceState
+
+%setDeviceState
+    ~set the $device.name $device.state
+    turn $device.state the $device.name
+
+~set
+    set
+    make
+    turn
+
+$device.name
+    $light.name
+    $switch.name
+
+$device.state
+    $on_off
+    $light.color
+
+$light.name
+    office light
+    living room light
+
+$switch.name
+    tea switch
+    lamp switch
+
+$light.color
+    blue
+    red
+    green
+    yellow
+    purple
+    orange
+    white
+
+$on_off
+    on
+    off

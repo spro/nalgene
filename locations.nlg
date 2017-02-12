@@ -1,0 +1,28 @@
+$location
+    $location.state
+    $location.city
+    $location.country
+
+$location.city
+    san franscisco
+    sf
+    boston
+    greenfield
+    new york city
+    nyc
+    los angeles
+    tokyo
+
+$location.state
+    california
+    new york
+    new hampshire
+    massachusetts
+    minnesota
+
+$location.country
+    usa
+    canada
+    mexico
+    japan
+

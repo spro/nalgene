@@ -162,3 +162,55 @@ Tokens with a `?` at the end will be used only 50% of the time.
 %findFood
     ~find $price? $food ~near $location
 ```
+
+```
+> find me sushi in san francisco
+( %
+    ( %findFood
+        ( $food sushi )
+        ( $location san francisco ) ) )
+
+> tell me the cheap fried chicken around tokyo
+( %
+    ( %findFood
+        ( $price cheap )
+        ( $food fried chicken )
+        ( $location tokyo ) ) )
+```
+
+## Passthrough tokens
+
+Tokens with a `=` at the end are called "passthrough" tokens and will not be included in the output tree, but their children will be. This is defined at the root level, rather than within a token sequence.
+
+```
+%
+    ~please? %command
+
+%command=
+    %getTime
+    %getFact
+
+%getTime
+    what time is it
+    what is the time
+
+%getFact=
+    %getLocationFact
+    %getPersonFact
+    %getPersonalFact
+```
+
+In this case, whenever the `%command` token is encountered, whatever its children output will be directly added to the tree (as opposed to prefixed with the `%command` token), so it will be output as `%getTime` or `%getFact`. But in fact `%getFact` is another passthrough token, so the value of its children will be passed all the way up the tree.
+
+```
+> what is the time
+( %
+    ( %getTime ) )
+
+> pretty please what is the population of tokyo
+( %
+    ( %getLocationFact
+        ( $location_fact population )
+        ( $location tokyo ) ) )
+```
+

@@ -1,0 +1,30 @@
+%
+    %findFood
+
+%findFood
+    ~find $price? $food ~near $location
+
+$price
+    expensive
+    cheap
+
+$food
+    sushi
+    fried chicken
+
+$location
+    boston
+    san francisco
+    tokyo
+
+~find
+    find
+    get me
+    tell me the
+    i want
+    what about
+
+~near
+    in
+    near
+    around

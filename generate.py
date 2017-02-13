@@ -33,6 +33,10 @@ def generate(generate_token='%', indent=0):
 
     for token in tokens:
         if token.startswith(('%', '$', '~')):
+            if token.endswith('?'):
+                token = re.sub(r'\?$', '', token)
+                if random.random() < 0.5:
+                    continue
             token_output, token_output_ = generate(token, indent+1)
             output += token_output + ' '
             if sections[token]['options']['passthrough']:

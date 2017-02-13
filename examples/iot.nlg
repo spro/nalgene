@@ -2,7 +2,7 @@
 @import locations.nlg
 @import filler.nlg
 
-%entry=
+%
     ~prefix %sentence ~suffix
 
 %sentence=

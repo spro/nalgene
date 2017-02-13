@@ -1,15 +1,16 @@
 import re
 import random
 import sys
+import os
 
-def parseSections(filename):
-    sections = open(filename).read().strip().split('\n\n')
+def parseSections(filename, base_dir='.'):
+    sections = open(os.path.join(base_dir, filename)).read().strip().split('\n\n')
     sections = [section.split('\n') for section in sections]
     all_sections = []
     if sections[0][0].startswith('@'):
         import_filenames = [line.split(' ')[1] for line in sections[0]]
         for import_filename in import_filenames:
-            all_sections += parseSections(import_filename)
+            all_sections += parseSections(import_filename, base_dir)
     all_sections += [parseSection(section) for section in sections]
     return all_sections
 
@@ -23,12 +24,13 @@ def parseSection(section):
     lines = [line.split(' ') for line in lines if not line.startswith('#')]
     return (key, {'lines': lines, 'options': options})
 
-def generate(generate_token='%entry', indent=0):
+def generate(generate_token='%', indent=0):
     ind = ' ' * indent * 4
     section = sections[generate_token]
     tokens = random.choice(section['lines'])
     output = ''
     output_ = []
+
     for token in tokens:
         if token.startswith(('%', '$', '~')):
             token_output, token_output_ = generate(token, indent+1)
@@ -43,8 +45,8 @@ def generate(generate_token='%entry', indent=0):
             output += token + ' '
 
     output = output.strip()
-    if generate_token == '%entry':
-        output_ = output_[0]
+    if generate_token == '%':
+        output_ = ['%'] + output_
 
     return output, output_
 
@@ -61,8 +63,13 @@ def lprint(a, n_indent=0):
             w(' ' + i)
     w(' )')
 
-sections = dict(parseSections('test.nlg'))
+if len(sys.argv) < 2:
+    print("Usage: python generate.py [grammar].nlg")
+    sys.exit()
+filename = os.path.basename(sys.argv[1])
+base_dir = os.path.dirname(sys.argv[1])
+sections = dict(parseSections(filename, base_dir))
 generated_output, generated_output_ = generate()
-print('>', generated_output, '\n')
+print('>', generated_output)
 lprint(generated_output_)
-w('\n')
+print()

@@ -31,6 +31,7 @@ def walk_tree(root, current, context, start_w=0):
 
             sub_flat, sub_tree = walk_tree(root, root[child_key], sub_context, start_w)
 
+            # Add words to flat tree
             flat.merge(sub_flat)
 
             # Adjust position based on number of tokens
@@ -38,6 +39,8 @@ def walk_tree(root, current, context, start_w=0):
             sub_tree.position = (start_w, start_w + len_w - 1, len_w)
             start_w += len_w
 
+
+            # Add to (or merge with) tree
             if not child_key.startswith('~'):
                 if root[child_key].passthrough:
                     tree.merge(sub_tree)
@@ -48,6 +51,11 @@ def walk_tree(root, current, context, start_w=0):
         else:
             start_w += 1
             len_w = 1
+            if current.type == 'word' and current.parent.key.startswith('$'):
+                joined_key = '.'.join([current.parent.key, current.key])
+                print('[terminal]', joined_key)
+                tree.type = 'value'
+                tree.key = joined_key
             flat.add(child_key)
 
     return flat, tree

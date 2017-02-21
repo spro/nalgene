@@ -1,9 +1,9 @@
-$location
-    $location.state
-    $location.city
-    $location.country
+$location=
+    $location_state
+    $location_city
+    $location_country
 
-$location.city
+$location_city
     san franscisco
     sf
     boston
@@ -13,14 +13,14 @@ $location.city
     los angeles
     tokyo
 
-$location.state
+$location_state
     california
     new york
     new hampshire
     massachusetts
     minnesota
 
-$location.country
+$location_country
     usa
     canada
     mexico

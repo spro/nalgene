@@ -3,10 +3,10 @@
 @import filler.nlg
 
 %
-    ~prefix %sentence ~suffix
+    ~prefix? %sentence ~suffix?
 
 %sentence=
-    %command
+    ~please? %command
     %sequence
     %if
 
@@ -32,9 +32,9 @@
     %getTime
 
 %getDeviceState
-    get the state of the $device.name
-    what is the the state of the $device.name
-    tell me about the $device.name
+    get the state of the $device_name
+    what is the the state of the $device_name
+    tell me about the $device_name
 
 %getWeather
     what is the weather in $location
@@ -49,31 +49,31 @@
     %setDeviceState
 
 %setDeviceState
-    ~set the $device.name $device.state
-    turn $device.state the $device.name
+    ~set the $device_name $device_state
+    turn $device_state the $device_name
 
 ~set
     set
     make
     turn
 
-$device.name
-    $light.name
-    $switch.name
+$device_name=
+    $light_name
+    $switch_name
 
-$device.state
+$device_state=
     $on_off
-    $light.color
+    $light_color
 
-$light.name
+$light_name
     office light
     living room light
 
-$switch.name
+$switch_name
     tea switch
     lamp switch
 
-$light.color
+$light_color
     blue
     red
     green

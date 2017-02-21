@@ -1,19 +1,23 @@
 ~prefix
-    ~please
-    ~could you
+    ~greeting
+
+~greeting
+    hey there
+    yo
+    hello
+    hi
 
 ~suffix
-    thanks
+    ~great? thanks
     thank you
     ~please
+
+~great
+    great
+    awesome
+    sweet
 
 ~please
     please
     pretty please
     plox
-
-~could
-    could
-    would
-    might
-

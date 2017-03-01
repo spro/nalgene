@@ -62,10 +62,19 @@ def walk_tree(root, current, context, start_w=0):
     return flat, tree
 
 def fix_sentence(sentence):
-    return fix_punctuation(fix_newlines(fix_spacing(sentence)))
+    return fix_capitalization(fix_punctuation(fix_newlines(fix_spacing(sentence))))
+
+all_punctuation = ',.!?'
+end_punctuation = '.!?'
+
+def fix_capitalization(sentence):
+    return ''.join(map(lambda s: s.capitalize(), re.split(r'([' + end_punctuation + '])', sentence)))
 
 def fix_punctuation(sentence):
-    return re.sub(r'\s([,.!])', '\\1', sentence)
+    fixed = re.sub(r'\s([' + all_punctuation + '])', '\\1', sentence)
+    if not re.match(r'[' + end_punctuation + ']', fixed):
+        fixed = fixed + '.'
+    return fixed
 
 def fix_newlines(sentence):
     return re.sub(r'\s*\\n\s*', '\n\n', sentence)

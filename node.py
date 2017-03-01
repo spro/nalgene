@@ -2,7 +2,7 @@ types = {
     '%': 'phrase',
     '@': 'ref',
     '~': 'synonym',
-    '$': 'value',
+    '$': 'variable',
 }
 
 class Node:
@@ -122,8 +122,8 @@ class Node:
             s = (' ' * indent * 4)
             s += '( '
         s += str(self.key)
-        if self.position != None:
-            s += ' ' + str(self.position)
+        # if self.position != None:
+        #     s += ' ' + str(self.position)
         ci = 0
         for child in self.children:
             if self.in_flat or not child.is_leaf_word:
@@ -205,4 +205,13 @@ class Node:
             else:
                 child.map_leaves(f)
 
+    def has_parent(self, type, parent_line=[]):
+        if self.parent == None:
+            return False, None
+        elif self.parent.type == type:
+            parent_line = [self.parent.key, self.key] + parent_line
+            return True, parent_line
+        else:
+            parent_line = [self.key] + parent_line
+            return self.parent.has_parent(type, parent_line)
 

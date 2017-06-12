@@ -122,8 +122,8 @@ class Node:
             s = (' ' * indent * 4)
             s += '( '
         s += str(self.key)
-        # if self.position != None:
-        #     s += ' ' + str(self.position)
+        if self.position != None:
+            s += ' ' + str(self.position)
         ci = 0
         for child in self.children:
             if self.in_flat or not child.is_leaf_word:

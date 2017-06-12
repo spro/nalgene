@@ -5,13 +5,26 @@ import json
 # Generate tokens up to $variable level
 
 def walk_tree(root, current, context, start_w=0):
-    print('\n[%d walk_tree]' % start_w, '"' + current.key + '"', 'context', context)
+    #print('\n[%d walk_tree]' % start_w, '"' + current.key + '"', 'context', context)
 
-    seq = random.choice(current)
+    try:
+        seq = random.choice(current)
+    except Exception as e:
+        print('Exception walking from current', current, context)
+        raise e
 
     flat = Node('>')
     tree = Node(current.key)
+
+    if seq.is_leaf:
+        print('flat seq', seq)
+        flat.add(seq)
+        tree.add(seq)
+        print('tree flat', tree)
+        return flat, tree
+
     for child in seq:
+        # print('[%d walk_tree]' % start_w, 'child', child)
         child_key = child.key
 
         # Optionally skip optional tokens
@@ -26,12 +39,13 @@ def walk_tree(root, current, context, start_w=0):
             # Existing variable, pass in context
             try:
                 sub_context = context[child_key]
+                if sub_context is not None: print('sub context', sub_context)
 
             except Exception:
-                print('[ERROR] Key', child_key, 'not in', context)
+                #print('[ERROR] Key', child_key, 'not in', context)
                 sub_context = None
 
-            sub_flat, sub_tree = walk_tree(root, root[child_key], sub_context, start_w)
+            sub_flat, sub_tree = walk_tree(root, sub_context or root[child_key], context, start_w)
 
             # Add words to flat tree
             flat.merge(sub_flat)
@@ -52,11 +66,14 @@ def walk_tree(root, current, context, start_w=0):
         else:
             start_w += 1
             len_w = 1
-            has_parent, parent_line = current.has_parent('variable')
-            if current.type == 'word' and has_parent:
+            has_variable_parent, parent_line = current.has_parent('variable')
+            # print('[terminal] (%s) %s %s' % (current.type, current.key, current.parent.key))
+            if has_variable_parent:
                 tree.type = 'variable'
                 tree.key = '.'.join(parent_line)
-                print('[terminal]', tree.key)
+                tree.add(child_key)
+            if current.type == 'variable':
+                tree.add(child_key)
             flat.add(child_key)
 
     return flat, tree
@@ -68,29 +85,31 @@ all_punctuation = ',.!?'
 end_punctuation = '.!?'
 
 def fix_capitalization(sentence):
-    return ''.join(map(lambda s: s.capitalize(), re.split(r'([' + end_punctuation + '])', sentence)))
+    return ''.join(map(lambda s: s.capitalize(), re.split(r'([' + end_punctuation + ']\s*)', sentence)))
 
 def fix_punctuation(sentence):
-    fixed = re.sub(r'\s([' + all_punctuation + '])', '\\1', sentence)
-    if not re.match(r'[' + end_punctuation + ']', fixed):
+    fixed = re.sub(r'\s([' + all_punctuation + '])', r'\1', sentence).strip()
+    if fixed[-1:] not in end_punctuation:
         fixed = fixed + '.'
     return fixed
 
 def fix_newlines(sentence):
-    return re.sub(r'\s*\\n\s*', '\n\n', sentence)
+    return re.sub(r'\s*\\n\s*', '\n\n', sentence).strip()
 
 def fix_spacing(sentence):
     return re.sub(r'\s+', ' ', sentence)
 
-def generate_from_file(base_dir, filename, root_context):
+def generate_from_file(base_dir, filename, root_context=None):
+    if root_context is None:
+        root_context = Node('%')
     parsed = parse_file(base_dir, filename)
     parsed.map_leaves(tokenizeLeaf)
     walked_flat, walked_tree = walk_tree(parsed, parsed['%'], root_context['%'])
-    print(walked_flat)
-    print('=', fix_sentence(walked_flat.raw_str))
-    print('=', walked_tree)
+    # print(walked_flat)
+    print('>', fix_sentence(walked_flat.raw_str))
+    print(walked_tree)
     print('')
-    return walked_flat, walked_tree
+    return parsed, walked_flat, walked_tree
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

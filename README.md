@@ -2,11 +2,30 @@
 
 A natural language generation language, intended for creating training data for intent parsing systems.
 
+## Overview
+
+Nalgene generates pairs of sentences and grammar trees by a random (or guided) walk through a grammar file.
+
+* Sentence: the natural language sentence, e.g. "turn on the light"
+* Tree: a nested list of tokens ([an s-expression](https://en.wikipedia.org/wiki/S-expression)) generated alongside the sentence, e.g.
+
+	```
+    ( %setDeviceState
+        ( $device.name light )
+        ( $device.state on ) ) )
+	```
+
 ## Usage
 
 ```
+$ python generate.py [template.nlg] [entry] [--key=value] ...
+```
+
+By default, generation walks through the template tree from the entry `%` node and chooses phrases and values randomly:
+
+```
 $ python generate.py examples/iot.nlg
-> please if the temperature in minnesota is equal to 2 then turn the office light off thanks
+> if the temperature in minnesota is equal to 2 then please turn the office light off thanks
 ( %if
     ( %condition
         ( %currentWeather
@@ -18,18 +37,36 @@ $ python generate.py examples/iot.nlg
         ( $device.state off ) ) )
 ```
 
-## Overview
+You can choose an entry point to start generation from:
 
-Nalgene generates by reading from a grammar file and outputting pairs of:
+```
+$ python generate.py examples/iot.nlg getWeather
+> tell me what it's like in new york
+( %getWeather
+    ( $location new york ) )
+```
 
-* Sentence: the natural language sentence, e.g. "turn on the light"
-* Tree: a nested list of tokens ([an s-expression](https://en.wikipedia.org/wiki/S-expression)) generated alongside the sentence, e.g.
+You can also supply values from the command line (unspecified values will be randomly chosen):
 
-	```
-    ( %setDeviceState
-        ( $device.name light )
-        ( $device.state on ) ) )
-	```
+```
+$ python generate.py examples/iot.nlg getWeather --location tokyo
+> what is the weather in tokyo ?
+( %getWeather
+    ( $location tokyo ) )
+```
+
+Or from a JSON file:
+
+```
+$ cat command.json
+{"entry": "%setDeviceState", "values": {"$device.state": "off", "$device.name": "office light"}}
+
+$ cat command.json | python generate.py examples/iot.nlg
+> please turn off the office light
+( %setDeviceState
+    ( $device.state off )
+    ( $device.name office light ) )
+```
 
 ## Syntax
 

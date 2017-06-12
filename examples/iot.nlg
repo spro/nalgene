@@ -10,9 +10,10 @@
     %sequence
     %if
 
-%command=
+%command
     %getState
-    %setState
+    %setLightState
+    %setSwitchState
 
 %sequence
     %command and then %command
@@ -24,7 +25,7 @@
     %currentWeather is $operator $number 
 
 %currentWeather
-    the temperature in $location 
+    the temperature in %location 
 
 %getState=
     %getDeviceState
@@ -37,20 +38,20 @@
     tell me about the $device_name
 
 %getWeather
-    what is the weather in $location
-    how is it in $location
-    tell me the weather of $location
+    what is the weather in %location
+    how is it in %location
+    tell me the weather of %location
 
 %getTime
-    what time is it in $location
-    tell me what time it is in $location
+    what time is it in %location
+    tell me what time it is in %location
 
-%setState=
-    %setDeviceState
-
-%setDeviceState
-    ~set the $device_name $device_state
-    turn $device_state the $device_name
+%setLightState
+    ~set the $light_name $light_state
+    turn $on_off the $light_name
+%setSwitchState
+    ~set the $switch_name $on_off
+    turn $on_off the $switch_name
 
 ~set
     set
@@ -61,7 +62,7 @@ $device_name=
     $light_name
     $switch_name
 
-$device_state=
+$light_state=
     $on_off
     $light_color
 

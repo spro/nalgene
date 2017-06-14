@@ -1,4 +1,4 @@
-types = {
+node_types = {
     '%': 'phrase',
     '@': 'ref',
     '~': 'synonym',
@@ -18,8 +18,8 @@ class Node:
                 self.passthrough = True
                 key = key[:-1]
             type_key = key[0]
-            if type_key in types:
-                self.type = types[type_key]
+            if type_key in node_types:
+                self.type = node_types[type_key]
         else:
             self.type = 'root?'
         self.key = key

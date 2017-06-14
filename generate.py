@@ -16,6 +16,7 @@ def walk_tree(root, current, context, start_w=0):
     flat = Node('>')
     tree = Node(current.key)
 
+    # TODO: Remove?
     if seq.is_leaf:
         print('flat seq', seq)
         flat.add(seq)
@@ -45,7 +46,12 @@ def walk_tree(root, current, context, start_w=0):
                 #print('[ERROR] Key', child_key, 'not in', context)
                 sub_context = None
 
-            sub_flat, sub_tree = walk_tree(root, sub_context or root[child_key], context, start_w)
+            try:
+                sub_flat, sub_tree = walk_tree(root, sub_context or root[child_key], context, start_w)
+            except Exception:
+                print('Exception walking from current', current, context)
+                raise e
+                #print('[ERROR] Key', child_key, 'not in', context)
 
             # Add words to flat tree
             flat.merge(sub_flat)
@@ -64,15 +70,14 @@ def walk_tree(root, current, context, start_w=0):
 
         # Terminal node, e.g. a word
         else:
+            has_variable_parent, parent_line = current.has_parent('variable')
             start_w += 1
             len_w = 1
-            has_variable_parent, parent_line = current.has_parent('variable')
-            # print('[terminal] (%s) %s %s' % (current.type, current.key, current.parent.key))
             if has_variable_parent:
                 tree.type = 'variable'
                 tree.key = '.'.join(parent_line)
                 tree.add(child_key)
-            if current.type == 'variable':
+            elif current.type == 'variable':
                 tree.add(child_key)
             flat.add(child_key)
 
@@ -125,11 +130,11 @@ if __name__ == "__main__":
 
     generate_from_file(base_dir, filename, root_context)
 
-else:
-    filename = sys.argv[1]
-    base_dir = os.path.dirname(os.path.realpath(__file__))
-    combined = os.path.join(base_dir, filename)
-    base_dir = os.path.dirname(combined)
-    filename = os.path.basename(combined)
+# else:
+#     filename = sys.argv[1]
+#     base_dir = os.path.dirname(os.path.realpath(__file__))
+#     combined = os.path.join(base_dir, filename)
+#     base_dir = os.path.dirname(combined)
+#     filename = os.path.basename(combined)
 
-    def generate(): return generate_from_file(base_dir, filename, Node('%'))
+#     def generate(): return generate_from_file(base_dir, filename, Node('%'))

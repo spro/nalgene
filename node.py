@@ -2,7 +2,7 @@ node_types = {
     '%': 'phrase',
     '@': 'ref',
     '~': 'synonym',
-    '$': 'variable',
+    '$': 'value',
 }
 
 class Node:

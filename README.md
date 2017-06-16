@@ -83,6 +83,7 @@ The indented lines under a node are the node's possible token sequences. Each to
 * a regular word (no prefix),
 * a `%phrase` node,
 * a `$value` node,
+* a `@ref` node,
 * or a `~synonym` word.
 
 Each token is added to the output sentence and/or tree during generation, depending on the type.
@@ -144,7 +145,7 @@ Here's how the generator arrived at this specific sentence and tree pair:
 
 ## Values
 
-Sometimes you don't want to ignore the specific words in a sentence, for example to capture the location in a sentence like "how is the weather in boston". Values, marked with a dollar sign as `$value`, are an extension of phrases that also include their regular word tokens in the tree.
+Sometimes you need to capture the specific words in a sentence, for example to capture the location in a sentence like "how is the weather in boston". Values, marked with a dollar sign as `$value`, are a type of leaf node that capture the regular word tokens in the tree.
 
 ```
 %getWeather
@@ -161,6 +162,30 @@ $location
 > what is the weather in san francisco
 ( %getWeather
     ( $location san francisco ) )
+```
+
+## Refs
+
+**TODO**: Better name for this
+
+As an alternative to the freeform `$value`, there is a `@ref` leaf node which references a specific value without capturing the words beneath it. This allows you to reference a specific entity, e.g. a specific room or device name, with multiple expansions.
+
+```
+%turnOnLight
+    turn the %light on
+
+%light
+    @office_light
+    @living_room_light
+
+@office_light
+    office light
+    light in the office
+
+@living
+    light in the den
+    light in the living room
+    living room light
 ```
 
 ## Synonyms

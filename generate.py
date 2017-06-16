@@ -2,10 +2,10 @@ from nalgene.parse import *
 import os
 import json
 
-# Generate tokens up to $variable level
+# Generate tokens up to $value level
 
 def walk_tree(root, current, context, start_w=0):
-    #print('\n[%d walk_tree]' % start_w, '"' + current.key + '"', 'context', context)
+    # print('\n[%d walk_tree]' % start_w, '"' + current.key + '"', 'context', context)
 
     try:
         seq = random.choice(current)
@@ -25,7 +25,7 @@ def walk_tree(root, current, context, start_w=0):
         return flat, tree
 
     for child in seq:
-        # print('[%d walk_tree]' % start_w, 'child', child)
+        # print('[%d walk_tree child]' % start_w, child)
         child_key = child.key
 
         # Optionally skip optional tokens
@@ -35,9 +35,9 @@ def walk_tree(root, current, context, start_w=0):
                 continue
 
         # Expandable word, e.g. %phrase or ~synonym
-        if child_key.startswith(('%', '~', '$')):
+        if child_key.startswith(('%', '~', '$', '@')):
 
-            # Existing variable, pass in context
+            # Existing value, pass in context
             try:
                 sub_context = context[child_key]
                 if sub_context is not None: print('sub context', sub_context)
@@ -48,10 +48,10 @@ def walk_tree(root, current, context, start_w=0):
 
             try:
                 sub_flat, sub_tree = walk_tree(root, sub_context or root[child_key], context, start_w)
-            except Exception:
-                print('Exception walking from current', current, context)
+            except Exception as e:
+                print('[ERROR] Key', child_key, 'not in', context)
+                print('Exception walking from current', current, child_key, context)
                 raise e
-                #print('[ERROR] Key', child_key, 'not in', context)
 
             # Add words to flat tree
             flat.merge(sub_flat)
@@ -70,14 +70,14 @@ def walk_tree(root, current, context, start_w=0):
 
         # Terminal node, e.g. a word
         else:
-            has_variable_parent, parent_line = current.has_parent('variable')
+            has_value_parent, parent_line = current.has_parent('value')
             start_w += 1
             len_w = 1
-            if has_variable_parent:
-                tree.type = 'variable'
+            if has_value_parent:
+                tree.type = 'value'
                 tree.key = '.'.join(parent_line)
                 tree.add(child_key)
-            elif current.type == 'variable':
+            elif current.type == 'value':
                 tree.add(child_key)
             flat.add(child_key)
 
@@ -113,7 +113,7 @@ def generate_from_file(base_dir, filename, root_context=None):
     # print(walked_flat)
     print('>', fix_sentence(walked_flat.raw_str))
     print(walked_tree)
-    print('')
+    print('-' * 80)
     return parsed, walked_flat, walked_tree
 
 if __name__ == "__main__":
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     test_json = json.load(open('test2.json'))
     root_context = Node('%').add(parse_dict(test_json))
 
-    generate_from_file(base_dir, filename, root_context)
+    generate_from_file(base_dir, filename)#, root_context)
 
 # else:
 #     filename = sys.argv[1]

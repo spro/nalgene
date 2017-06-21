@@ -67,6 +67,9 @@ def walk_tree(root, current, context, start_w=0):
                     tree.merge(sub_tree)
                 else:
                     tree.add(sub_tree)
+            else:
+                if tree.type == 'value':
+                    tree.merge(sub_flat)
 
         # Terminal node, e.g. a word
         else:
